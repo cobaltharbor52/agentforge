@@ -1,7 +1,6 @@
 """Unit tests for configuration management."""
 
 import os
-import pytest
 import tempfile
 import yaml
 
@@ -130,9 +129,7 @@ class TestContentForgeConfig:
         assert config.mimo.api_key == "env-test-key"
 
     def test_get_agent_config_existing(self):
-        config = ContentForgeConfig(
-            agents=[AgentConfig(name="writer", temperature_override=0.9)]
-        )
+        config = ContentForgeConfig(agents=[AgentConfig(name="writer", temperature_override=0.9)])
         agent_config = config.get_agent_config("writer")
         assert agent_config.temperature_override == 0.9
 

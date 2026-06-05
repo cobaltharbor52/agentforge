@@ -44,8 +44,7 @@ Output: Full translated article in Markdown, same structure as original."""
         keywords_note = ""
         if preserve_keywords:
             keywords_note = (
-                f"\nPreserve these keywords in original form: "
-                f"{', '.join(preserve_keywords)}"
+                f"\nPreserve these keywords in original form: {', '.join(preserve_keywords)}"
             )
 
         prompt = f"""Translate the following article from {source_language} to {target_language}.

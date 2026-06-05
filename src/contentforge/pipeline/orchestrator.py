@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
-import json
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Optional
@@ -20,6 +18,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class PipelineResult:
     """Final result from the complete pipeline."""
+
     status: str = "success"
     article: str = ""
     research: str = ""
@@ -68,8 +67,14 @@ class PipelineOrchestrator:
     """
 
     AGENT_ORDER = [
-        "research", "outline", "writer", "seo",
-        "editor", "quality", "translator", "publisher",
+        "research",
+        "outline",
+        "writer",
+        "seo",
+        "editor",
+        "quality",
+        "translator",
+        "publisher",
     ]
 
     def __init__(self, config: ContentForgeConfig):
@@ -142,9 +147,7 @@ class PipelineOrchestrator:
 
                 # Step 5 + 6: Editor → Quality loop
                 for iteration in range(self.config.pipeline.max_iterations):
-                    logger.info(
-                        f"[Pipeline] Step 5/8: Editor (iteration {iteration + 1})"
-                    )
+                    logger.info(f"[Pipeline] Step 5/8: Editor (iteration {iteration + 1})")
                     editor_agent = get_agent(
                         "editor", config=self.config, client=client, tracker=self.tracker
                     )
@@ -155,9 +158,7 @@ class PipelineOrchestrator:
                     result.agent_results["editor"] = editor_result
                     current_content = editor_result.content
 
-                    logger.info(
-                        f"[Pipeline] Step 6/8: Quality (iteration {iteration + 1})"
-                    )
+                    logger.info(f"[Pipeline] Step 6/8: Quality (iteration {iteration + 1})")
                     quality_agent = get_agent(
                         "quality", config=self.config, client=client, tracker=self.tracker
                     )
@@ -229,6 +230,5 @@ class PipelineOrchestrator:
     def get_agent_list(self) -> list[dict[str, str]]:
         """Return list of all available agents with descriptions."""
         return [
-            {"name": name, "description": cls.description}
-            for name, cls in AGENT_REGISTRY.items()
+            {"name": name, "description": cls.description} for name, cls in AGENT_REGISTRY.items()
         ]

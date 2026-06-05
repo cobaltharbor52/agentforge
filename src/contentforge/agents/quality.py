@@ -85,6 +85,7 @@ Return as structured JSON."""
         overall_score = 0
         try:
             import json
+
             parsed = json.loads(response.content)
             overall_score = parsed.get("overall_score", 0)
         except (json.JSONDecodeError, AttributeError):

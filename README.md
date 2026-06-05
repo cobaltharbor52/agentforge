@@ -1,13 +1,15 @@
-# MiMo ContentForge
+# ContentForge
 
-> **8-Agent AI Content Pipeline powered by Xiaomi MiMo V2.5 Pro**
+> **8-Agent AI Content Pipeline for any OpenAI-compatible LLM**
 >
 > From topic to published article in minutes — research, write, optimize, translate, and publish with 8 specialized AI agents orchestrated through a single pipeline.
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests: 96](https://img.shields.io/badge/tests-96-brightgreen.svg)](tests/)
-[![LOC: 2,800+](https://img.shields.io/badge/LOC-2%2C800%2B-orange.svg)](src/)
+[![Tests: 112](https://img.shields.io/badge/tests-112-brightgreen.svg)](tests/)
+[![LOC: 2,900+](https://img.shields.io/badge/LOC-2%2C900%2B-orange.svg)](src/)
+
+Works with **OpenAI, OpenRouter, Ollama, llama.cpp, Xiaomi MiMo**, or any endpoint that speaks the OpenAI `/chat/completions` protocol. Pick a provider with one config line — no code changes.
 
 ---
 
@@ -15,8 +17,8 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    MiMo ContentForge Pipeline                   │
-│                  Powered by Xiaomi MiMo V2.5 Pro                │
+│                    ContentForge Pipeline                       │
+│              Any OpenAI-compatible LLM backend                 │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐    │
@@ -36,9 +38,9 @@
 │  │  Per-agent consumption · Cache hit rate · Latency    │      │
 │  └──────────────────────────────────────────────────────┘      │
 │                                                                 │
-│  API: token-plan-sgp.xiaomimimo.com/v1/chat/completions        │
-│  Auth: api-key header (Token Plan format)                       │
-│  Model: mimo-v2.5-pro · Streaming SSE · reasoning_content      │
+│  Protocol: OpenAI-compatible /chat/completions                 │
+│  Auth: bearer token or api-key header (per provider)           │
+│  Streaming SSE · optional reasoning_content support            │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -57,15 +59,18 @@
 
 **Total per pipeline run: ~9,400 tokens** (single language)
 
-## Why MiMo V2.5 Pro?
+## Supported Providers
 
-We specifically chose MiMo over Claude/GPT for this pipeline because:
+ContentForge talks to any OpenAI-compatible `/chat/completions` endpoint. Built-in presets:
 
-1. **Long-chain reasoning** — The Quality Agent's 8-dimension scoring benefits from MiMo's `reasoning_content` field, which shows the model's step-by-step evaluation process
-2. **Streaming SSE quality** — Real-time token-by-token output for the Writer Agent allows live preview without buffering delays
-3. **Chinese/Malay proficiency** — The Translator Agent produces natural zh/ms/id output without the awkward phrasing common in Western models
-4. **Cost efficiency** — Token Plan pricing at `token-plan-sgp.xiaomimimo.com` makes high-volume content production viable (~$0.20/M cache hit)
-5. **Structured output** — MiMo reliably produces valid JSON for Research, Outline, SEO, and Quality agents without schema enforcement
+| Provider | `provider=` | Default model | Auth | Env vars |
+|----------|-------------|---------------|------|----------|
+| OpenAI | `openai` | `gpt-4o-mini` | Bearer | `OPENAI_API_KEY`, `OPENAI_BASE_URL` |
+| OpenRouter | `openrouter` | `openai/gpt-4o-mini` | Bearer | `OPENROUTER_API_KEY` |
+| Ollama (local) | `ollama` | `llama3.1` | Bearer | `OLLAMA_BASE_URL` |
+| Xiaomi MiMo | `mimo` | `mimo-v2.5-pro` | api-key | `MIMO_API_KEY` |
+
+Point `base_url` at any other compatible endpoint (llama.cpp, vLLM, LM Studio, a local proxy) and it just works. The pipeline benefits from models that expose a `reasoning_content` field (used by the Quality Agent's 8-dimension scoring) and strong multilingual output (used by the Translator Agent), but neither is required.
 
 ## Quick Start
 
@@ -73,10 +78,10 @@ We specifically chose MiMo over Claude/GPT for this pipeline because:
 # Install
 pip install -e ".[dev]"
 
-# Set API key
-export MIMO_API_KEY="your-token-plan-key"
+# Pick any provider — set its API key (OpenAI shown here)
+export OPENAI_API_KEY="sk-..."
 
-# Generate content
+# Generate content (uses the default provider unless overridden in config)
 contentforge generate "AI in Healthcare" --words 2000 --output ./output
 
 # With translation
@@ -153,10 +158,12 @@ Daily estimate: **50-100 pipeline runs** = ~500K–1M tokens/day
 
 ```yaml
 # contentforge.yaml
-mimo:
-  api_key: ${MIMO_API_KEY}
-  base_url: https://token-plan-sgp.xiaomimimo.com/v1
-  model: mimo-v2.5-pro
+llm:
+  provider: openai          # openai | openrouter | ollama | mimo
+  api_key: ${OPENAI_API_KEY}
+  # base_url and model default from the provider preset; override if needed
+  # base_url: https://api.openai.com/v1
+  # model: gpt-4o-mini
   max_tokens: 4096
   temperature: 0.7
   max_retries: 3
@@ -198,19 +205,20 @@ pytest -m integration
 pytest -v
 ```
 
-**96 tests** covering:
-- Configuration management (16 tests)
+**112 tests** covering:
+- Configuration management (17 tests)
+- Multi-backend LLM config: presets, auth styles, env resolution (16 tests)
 - Token tracking & reporting (14 tests)
 - Text utilities (12 tests)
 - Export utilities (4 tests)
 - Agent base class & all 8 agents (34 tests)
 - Pipeline orchestration (8 tests)
-- Error handling & edge cases (8 tests)
+- Error handling & edge cases (7 tests)
 
 ## Project Structure
 
 ```
-mimo-contentforge/
+contentforge/
 ├── src/contentforge/
 │   ├── __init__.py
 │   ├── cli.py                    # Click CLI with Rich output
@@ -227,8 +235,9 @@ mimo-contentforge/
 │   │   └── publisher.py          # Agent 8: Publisher
 │   ├── core/
 │   │   ├── __init__.py
-│   │   ├── config.py             # Pydantic config management
-│   │   ├── mimo_client.py        # MiMo API client (SSE streaming)
+│   │   ├── config.py             # Pydantic config (multi-provider presets)
+│   │   ├── llm_client.py         # OpenAI-compatible client (SSE streaming)
+│   │   ├── mimo_client.py        # Backward-compat shim → llm_client
 │   │   └── token_tracker.py      # Per-agent token metrics
 │   ├── pipeline/
 │   │   ├── __init__.py
@@ -260,12 +269,12 @@ mimo-contentforge/
 
 ## API Reference
 
-### MiMoClient
+### LLMClient
 
 ```python
-from contentforge.core.mimo_client import MiMoClient, ChatMessage
+from contentforge.core.llm_client import LLMClient, ChatMessage
 
-async with MiMoClient(config) as client:
+async with LLMClient(config) as client:
     # Non-streaming
     response = await client.chat([
         ChatMessage(role="system", content="You are helpful."),
@@ -279,7 +288,7 @@ async with MiMoClient(config) as client:
         print(chunk.delta, end="", flush=True)
 ```
 
-**Important**: MiMo Token Plan uses `api-key` header, NOT `Authorization: Bearer`.
+**Auth styles**: `provider="openai"` (and openrouter/ollama) use `Authorization: Bearer`; `provider="mimo"` uses the `api-key` header. The right style is selected automatically from the provider preset. `MiMoClient` remains importable as a backward-compatible alias of `LLMClient`.
 
 ### TokenTracker
 
@@ -301,5 +310,4 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-**Built with Xiaomi MiMo V2.5 Pro** via Token Plan API
-`token-plan-sgp.xiaomimimo.com/v1`
+**Provider-agnostic** — works with OpenAI, OpenRouter, Ollama, llama.cpp, Xiaomi MiMo, or any OpenAI-compatible `/chat/completions` endpoint.

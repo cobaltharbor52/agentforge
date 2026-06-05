@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
@@ -12,6 +12,7 @@ from typing import Optional
 @dataclass
 class AgentMetrics:
     """Per-agent token and performance metrics."""
+
     agent_name: str
     call_count: int = 0
     prompt_tokens: int = 0
@@ -140,11 +141,13 @@ class TokenTracker:
         lines.append(f"  Pipeline Duration: {self.pipeline_duration_s:.1f}s")
         lines.append(f"  Total Tokens: {self.total_tokens:,}")
         lines.append(f"    Prompt: {total_prompt:,} | Completion: {total_comp:,}")
-        lines.append(f"    Cache Hit: {total_cached:,} ({total_cached/max(total_prompt,1):.1%})")
+        lines.append(f"    Cache Hit: {total_cached:,} ({total_cached / max(total_prompt, 1):.1%})")
         lines.append(f"  Total API Calls: {self.total_calls}")
         lines.append("")
 
-        lines.append(f"  {'Agent':<20} {'Calls':>6} {'Tokens':>10} {'Avg/call':>10} {'Latency':>10}")
+        lines.append(
+            f"  {'Agent':<20} {'Calls':>6} {'Tokens':>10} {'Avg/call':>10} {'Latency':>10}"
+        )
         lines.append("  " + "-" * 58)
 
         for name, m in sorted(self._agents.items(), key=lambda x: -x[1].total_tokens):
@@ -155,8 +158,7 @@ class TokenTracker:
 
         lines.append("  " + "-" * 58)
         lines.append(
-            f"  {'TOTAL':<20} {self.total_calls:>6} {self.total_tokens:>10,} "
-            f"{'':>10} {'':>10}"
+            f"  {'TOTAL':<20} {self.total_calls:>6} {self.total_tokens:>10,} {'':>10} {'':>10}"
         )
         lines.append("")
         lines.append("=" * 60)

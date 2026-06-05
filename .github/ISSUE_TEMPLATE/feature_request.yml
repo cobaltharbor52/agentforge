@@ -1,0 +1,40 @@
+name: Feature request
+description: Suggest an idea or improvement for ContentForge
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What are you trying to do that ContentForge doesn't support today?
+      placeholder: I want to use ContentForge with <provider>, but ...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe what you'd like to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any workarounds or other approaches you've thought about.
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - New LLM provider preset
+        - New agent / agent improvement
+        - New publish target / export format
+        - CLI / config
+        - Documentation
+        - Other
+    validations:
+      required: true

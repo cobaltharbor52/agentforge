@@ -8,9 +8,9 @@ import re
 def word_count(text: str) -> int:
     """Count words in text (handles both English and CJK)."""
     # Count CJK characters as individual words
-    cjk = len(re.findall(r'[\u4e00-\u9fff\u3400-\u4dbf]', text))
+    cjk = len(re.findall(r"[\u4e00-\u9fff\u3400-\u4dbf]", text))
     # Count English words
-    english_words = len(re.findall(r'[a-zA-Z]+', text))
+    english_words = len(re.findall(r"[a-zA-Z]+", text))
     return cjk + english_words
 
 
@@ -20,6 +20,7 @@ def extract_frontmatter(text: str) -> tuple[dict, str]:
         parts = text.split("---", 2)
         if len(parts) >= 3:
             import yaml
+
             fm = yaml.safe_load(parts[1]) or {}
             return fm, parts[2].strip()
     return {}, text
@@ -35,9 +36,9 @@ def truncate(text: str, max_chars: int = 100, suffix: str = "...") -> str:
 def slugify(text: str) -> str:
     """Convert text to URL-friendly slug."""
     text = text.lower().strip()
-    text = re.sub(r'[^\w\s-]', '', text)
-    text = re.sub(r'[-\s]+', '-', text)
-    return text.strip('-')
+    text = re.sub(r"[^\w\s-]", "", text)
+    text = re.sub(r"[-\s]+", "-", text)
+    return text.strip("-")
 
 
 def reading_time(text: str, wpm: int = 200) -> str:

@@ -2,10 +2,9 @@
 
 import json
 import os
-import pytest
 import tempfile
 
-from contentforge.core.token_tracker import AgentMetrics, TokenTracker
+from contentforge.core.token_tracker import AgentMetrics
 
 
 class TestAgentMetrics:
@@ -79,6 +78,7 @@ class TestTokenTracker:
 
     def test_pipeline_duration(self, tracker):
         import time
+
         tracker.start_pipeline()
         time.sleep(0.01)
         tracker.end_pipeline()
@@ -120,16 +120,14 @@ class TestTokenTracker:
 
     def test_cached_tokens_tracking(self, tracker):
         tracker.record(
-            "research", prompt_tokens=500, completion_tokens=300,
-            latency_ms=100, cached_tokens=200
+            "research", prompt_tokens=500, completion_tokens=300, latency_ms=100, cached_tokens=200
         )
         summary = tracker.summary()
         assert summary["agents"]["research"]["cached_tokens"] == 200
 
     def test_error_tracking(self, tracker):
         tracker.record(
-            "research", prompt_tokens=0, completion_tokens=0,
-            latency_ms=50, errors=1, retries=2
+            "research", prompt_tokens=0, completion_tokens=0, latency_ms=50, errors=1, retries=2
         )
         summary = tracker.summary()
         assert summary["agents"]["research"]["errors"] == 1

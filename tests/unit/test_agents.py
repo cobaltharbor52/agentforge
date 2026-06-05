@@ -20,7 +20,7 @@ from contentforge.core.mimo_client import ChatResponse, TokenUsage
 def make_test_response(content='{"test": "data"}', prompt=500, comp=300):
     return ChatResponse(
         content=content,
-        usage=TokenUsage(prompt_tokens=prompt, completion_tokens=comp, total_tokens=prompt+comp),
+        usage=TokenUsage(prompt_tokens=prompt, completion_tokens=comp, total_tokens=prompt + comp),
         model="mimo-v2.5-pro",
         latency_ms=100.0,
     )
@@ -66,7 +66,16 @@ class TestAgentRegistry:
         assert len(AGENT_REGISTRY) == 8
 
     def test_expected_names(self):
-        expected = {"research", "outline", "writer", "seo", "editor", "translator", "quality", "publisher"}
+        expected = {
+            "research",
+            "outline",
+            "writer",
+            "seo",
+            "editor",
+            "translator",
+            "quality",
+            "publisher",
+        }
         assert set(AGENT_REGISTRY.keys()) == expected
 
     def test_get_valid_agent(self, config, mock_client, tracker):
@@ -95,9 +104,9 @@ class TestResearchAgent:
 
     @pytest.mark.asyncio
     async def test_execute_returns_result(self, config, mock_client, tracker):
-        mock_client.chat = AsyncMock(return_value=make_test_response(
-            '{"topic": "AI", "key_subtopics": [{"title": "ML"}]}'
-        ))
+        mock_client.chat = AsyncMock(
+            return_value=make_test_response('{"topic": "AI", "key_subtopics": [{"title": "ML"}]}')
+        )
         a = ResearchAgent(config=config, client=mock_client, tracker=tracker)
         result = await a.execute(topic="AI in Healthcare")
         assert result.ok
@@ -119,9 +128,9 @@ class TestOutlineAgent:
 
     @pytest.mark.asyncio
     async def test_execute_with_research(self, config, mock_client, tracker):
-        mock_client.chat = AsyncMock(return_value=make_test_response(
-            '{"title": "Guide", "sections": []}'
-        ))
+        mock_client.chat = AsyncMock(
+            return_value=make_test_response('{"title": "Guide", "sections": []}')
+        )
         a = OutlineAgent(config=config, client=mock_client, tracker=tracker)
         result = await a.execute(research_data="data", target_words=2000)
         assert result.ok
@@ -135,9 +144,9 @@ class TestWriterAgent:
 
     @pytest.mark.asyncio
     async def test_execute_produces_content(self, config, mock_client, tracker):
-        mock_client.chat = AsyncMock(return_value=make_test_response(
-            "# AI Guide\n\nComprehensive content here."
-        ))
+        mock_client.chat = AsyncMock(
+            return_value=make_test_response("# AI Guide\n\nComprehensive content here.")
+        )
         a = WriterAgent(config=config, client=mock_client, tracker=tracker)
         result = await a.execute(outline="Outline", research_data="Research")
         assert result.ok
@@ -151,9 +160,7 @@ class TestSEOAgent:
 
     @pytest.mark.asyncio
     async def test_execute_analyzes(self, config, mock_client, tracker):
-        mock_client.chat = AsyncMock(return_value=make_test_response(
-            '{"seo_score": 85}'
-        ))
+        mock_client.chat = AsyncMock(return_value=make_test_response('{"seo_score": 85}'))
         a = SEOAgent(config=config, client=mock_client, tracker=tracker)
         result = await a.execute(content="# Article", target_keywords=["AI"])
         assert result.ok
@@ -167,9 +174,9 @@ class TestEditorAgent:
 
     @pytest.mark.asyncio
     async def test_execute_refines(self, config, mock_client, tracker):
-        mock_client.chat = AsyncMock(return_value=make_test_response(
-            "# Refined Article\n\nPolished."
-        ))
+        mock_client.chat = AsyncMock(
+            return_value=make_test_response("# Refined Article\n\nPolished.")
+        )
         a = EditorAgent(config=config, client=mock_client, tracker=tracker)
         result = await a.execute(content="Draft", seo_recommendations="Tips")
         assert result.ok
@@ -182,9 +189,9 @@ class TestTranslatorAgent:
 
     @pytest.mark.asyncio
     async def test_execute_translates(self, config, mock_client, tracker):
-        mock_client.chat = AsyncMock(return_value=make_test_response(
-            "# AI Guide\n\nChinese content."
-        ))
+        mock_client.chat = AsyncMock(
+            return_value=make_test_response("# AI Guide\n\nChinese content.")
+        )
         a = TranslatorAgent(config=config, client=mock_client, tracker=tracker)
         result = await a.execute(content="# AI", target_language="zh")
         assert result.ok
@@ -192,13 +199,9 @@ class TestTranslatorAgent:
 
     @pytest.mark.asyncio
     async def test_preserves_keywords(self, config, mock_client, tracker):
-        mock_client.chat = AsyncMock(return_value=make_test_response(
-            "MiMo is great"
-        ))
+        mock_client.chat = AsyncMock(return_value=make_test_response("MiMo is great"))
         a = TranslatorAgent(config=config, client=mock_client, tracker=tracker)
-        result = await a.execute(
-            content="text", target_language="ms", preserve_keywords=["MiMo"]
-        )
+        result = await a.execute(content="text", target_language="ms", preserve_keywords=["MiMo"])
         assert result.ok
 
 
@@ -241,6 +244,7 @@ class TestPublisherAgent:
 class TestBaseAgentConfig:
     def test_system_prompt_override(self, config, mock_client, tracker):
         from contentforge.core.config import AgentConfig
+
         config.agents = [AgentConfig(name="research", system_prompt_override="Custom")]
         a = ResearchAgent(config=config, client=mock_client, tracker=tracker)
         assert a.effective_system_prompt == "Custom"

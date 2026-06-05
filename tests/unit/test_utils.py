@@ -1,7 +1,5 @@
 """Unit tests for text utilities."""
 
-import pytest
-
 from contentforge.utils.text import (
     extract_frontmatter,
     reading_time,

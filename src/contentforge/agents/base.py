@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
-from ..core.config import AgentConfig, ContentForgeConfig
+from ..core.config import ContentForgeConfig
 from ..core.mimo_client import ChatMessage, ChatResponse, MiMoClient
 from ..core.token_tracker import TokenTracker
 
@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class AgentResult:
     """Standardized result from any agent."""
+
     agent_name: str
     status: str = "success"  # success | partial | failed
     content: str = ""

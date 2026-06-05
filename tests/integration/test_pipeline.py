@@ -2,11 +2,10 @@
 
 import json
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 from contentforge.core.config import ContentForgeConfig
-from contentforge.core.mimo_client import ChatResponse, MiMoClient, TokenUsage
-from contentforge.core.token_tracker import TokenTracker
+from contentforge.core.mimo_client import ChatResponse, TokenUsage
 from contentforge.pipeline.orchestrator import PipelineOrchestrator, PipelineResult
 
 
@@ -24,22 +23,28 @@ def make_response(content: str, prompt_tokens=500, completion_tokens=300) -> Cha
 
 
 AGENT_RESPONSES = {
-    "research": json.dumps({
-        "topic": "AI Healthcare",
-        "key_subtopics": [{"title": "Diagnosis", "key_facts": ["fact1"]}],
-    }),
-    "outline": json.dumps({
-        "title": "AI in Healthcare",
-        "sections": [{"heading": "Intro", "word_allocation": 200}],
-    }),
+    "research": json.dumps(
+        {
+            "topic": "AI Healthcare",
+            "key_subtopics": [{"title": "Diagnosis", "key_facts": ["fact1"]}],
+        }
+    ),
+    "outline": json.dumps(
+        {
+            "title": "AI in Healthcare",
+            "sections": [{"heading": "Intro", "word_allocation": 200}],
+        }
+    ),
     "writer": "# AI in Healthcare\n\nA comprehensive guide.",
     "seo": json.dumps({"seo_score": 85, "keyword_analysis": {}}),
     "editor": "# AI in Healthcare (Edited)\n\nPolished guide.",
     "quality": json.dumps({"overall_score": 90, "pass_threshold": True}),
-    "publisher": json.dumps({
-        "formats": {"markdown": "content"},
-        "metadata": {"title": "AI Healthcare"},
-    }),
+    "publisher": json.dumps(
+        {
+            "formats": {"markdown": "content"},
+            "metadata": {"title": "AI Healthcare"},
+        }
+    ),
 }
 
 
@@ -127,6 +132,7 @@ class TestPipelineOrchestrator:
     @pytest.mark.asyncio
     async def test_pipeline_failure_at_research(self, config):
         """Test pipeline handles agent failure gracefully."""
+
         async def mock_chat(*args, **kwargs):
             raise Exception("API connection failed")
 

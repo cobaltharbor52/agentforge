@@ -5,14 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mimo-contentforge"
 version = "1.0.0"
-description = "8-Agent AI Content Pipeline powered by Xiaomi MiMo V2.5 Pro"
+description = "8-Agent AI Content Pipeline for any OpenAI-compatible LLM (OpenAI, OpenRouter, Ollama, MiMo)"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.10"
 authors = [
     {name = "ContentForge Team"}
 ]
-keywords = ["ai", "content", "agents", "mimo", "pipeline", "automation"]
+keywords = ["ai", "content", "agents", "llm", "openai", "pipeline", "automation"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
