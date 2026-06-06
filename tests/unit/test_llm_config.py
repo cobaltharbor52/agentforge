@@ -15,7 +15,16 @@ from contentforge.core.config import (
 
 class TestProviderPresets:
     def test_known_providers_present(self):
-        for provider in ("mimo", "openai", "openrouter", "ollama"):
+        for provider in (
+            "mimo",
+            "openai",
+            "openrouter",
+            "ollama",
+            "groq",
+            "deepseek",
+            "together",
+            "mistral",
+        ):
             assert provider in PROVIDER_PRESETS
 
     def test_default_provider_is_mimo(self):
@@ -42,6 +51,28 @@ class TestLLMConfigPresetResolution:
     def test_unknown_provider_falls_back_to_default(self):
         config = LLMConfig(provider="does-not-exist", api_key="x")
         assert "xiaomimimo.com" in config.base_url  # mimo default
+
+    def test_groq_preset(self):
+        config = LLMConfig(provider="groq", api_key="gsk-test")
+        assert "api.groq.com" in config.base_url
+        assert config.auth_style == "bearer"
+        assert config.model == "llama-3.3-70b-versatile"
+
+    def test_deepseek_preset(self):
+        config = LLMConfig(provider="deepseek", api_key="sk-test")
+        assert "api.deepseek.com" in config.base_url
+        assert config.auth_style == "bearer"
+        assert config.model == "deepseek-chat"
+
+    def test_together_preset(self):
+        config = LLMConfig(provider="together", api_key="tg-test")
+        assert "api.together.xyz" in config.base_url
+        assert config.auth_style == "bearer"
+
+    def test_mistral_preset(self):
+        config = LLMConfig(provider="mistral", api_key="ms-test")
+        assert "api.mistral.ai" in config.base_url
+        assert config.auth_style == "bearer"
 
     def test_explicit_values_override_preset(self):
         config = LLMConfig(

@@ -47,6 +47,34 @@ PROVIDER_PRESETS: dict[str, dict[str, str]] = {
         "env_key": "OLLAMA_API_KEY",
         "env_base": "OLLAMA_BASE_URL",
     },
+    "groq": {
+        "base_url": "https://api.groq.com/openai/v1",
+        "auth_style": "bearer",
+        "model": "llama-3.3-70b-versatile",
+        "env_key": "GROQ_API_KEY",
+        "env_base": "GROQ_BASE_URL",
+    },
+    "deepseek": {
+        "base_url": "https://api.deepseek.com/v1",
+        "auth_style": "bearer",
+        "model": "deepseek-chat",
+        "env_key": "DEEPSEEK_API_KEY",
+        "env_base": "DEEPSEEK_BASE_URL",
+    },
+    "together": {
+        "base_url": "https://api.together.xyz/v1",
+        "auth_style": "bearer",
+        "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+        "env_key": "TOGETHER_API_KEY",
+        "env_base": "TOGETHER_BASE_URL",
+    },
+    "mistral": {
+        "base_url": "https://api.mistral.ai/v1",
+        "auth_style": "bearer",
+        "model": "mistral-small-latest",
+        "env_key": "MISTRAL_API_KEY",
+        "env_base": "MISTRAL_BASE_URL",
+    },
 }
 
 DEFAULT_PROVIDER = "mimo"

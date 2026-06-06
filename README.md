@@ -68,6 +68,10 @@ ContentForge talks to any OpenAI-compatible `/chat/completions` endpoint. Built-
 | OpenAI | `openai` | `gpt-4o-mini` | Bearer | `OPENAI_API_KEY`, `OPENAI_BASE_URL` |
 | OpenRouter | `openrouter` | `openai/gpt-4o-mini` | Bearer | `OPENROUTER_API_KEY` |
 | Ollama (local) | `ollama` | `llama3.1` | Bearer | `OLLAMA_BASE_URL` |
+| Groq | `groq` | `llama-3.3-70b-versatile` | Bearer | `GROQ_API_KEY` |
+| DeepSeek | `deepseek` | `deepseek-chat` | Bearer | `DEEPSEEK_API_KEY` |
+| Together | `together` | `meta-llama/Llama-3.3-70B-Instruct-Turbo` | Bearer | `TOGETHER_API_KEY` |
+| Mistral | `mistral` | `mistral-small-latest` | Bearer | `MISTRAL_API_KEY` |
 | Xiaomi MiMo | `mimo` | `mimo-v2.5-pro` | api-key | `MIMO_API_KEY` |
 
 Point `base_url` at any other compatible endpoint (llama.cpp, vLLM, LM Studio, a local proxy) and it just works. The pipeline benefits from models that expose a `reasoning_content` field (used by the Quality Agent's 8-dimension scoring) and strong multilingual output (used by the Translator Agent), but neither is required.
